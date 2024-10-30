@@ -1,0 +1,24 @@
+server:
+  name: server-mc
+  port: 11223
+  username: admin
+  password: admin@123
+log:
+  path:
+    windows: D:\log\server-mc\server.log
+    linux: /var/log/server-mc/server.log
+  level:
+    default: debug
+    env: ${MS_LOG_LEVEL}
+ssh:
+  host: 192.168.6.212
+  port: 22
+  username: root
+  password: admin@123
+  log:
+    path:
+      windows: D:\log\server-mc\ssh.log
+      linux: /var/log/server-mc/ssh.log
+mc:
+  version: 1.21.43.01
+  path: /opt/mc
