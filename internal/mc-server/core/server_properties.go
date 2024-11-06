@@ -4,10 +4,11 @@ import (
 	"bytes"
 	_ "embed"
 	"fmt"
+	"github.com/candbright/go-ssh/ssh"
 	"html/template"
 	"path"
 
-	"github.com/candbright/server-mc/internal/mc-server/common"
+	"github.com/candbright/server-mc/internal/mc-server/utils"
 	"github.com/candbright/server-mc/pkg/dw"
 	"github.com/magiconair/properties"
 	"github.com/pkg/errors"
@@ -18,18 +19,21 @@ var serverPropertiesFilter = map[string][]string{
 }
 
 type ServerProperties struct {
+	Session ssh.Session
 	Version string
 	rootDir string
 	*dw.DataWriter[map[string]string]
 }
 
 type ServerPropertiesConfig struct {
+	Session ssh.Session
 	Version string
 	RootDir string
 }
 
 func NewServerProperties(config ServerPropertiesConfig) *ServerProperties {
 	sp := &ServerProperties{
+		Session: config.Session,
 		Version: config.Version,
 		rootDir: config.RootDir,
 	}
@@ -47,7 +51,8 @@ func (sp *ServerProperties) TemplateFileName() string {
 
 func (sp *ServerProperties) Init() {
 	sp.DataWriter = dw.New[map[string]string](dw.Config{
-		Path: path.Join(sp.rootDir, sp.FileName()),
+		Session: sp.Session,
+		Path:    path.Join(sp.rootDir, sp.FileName()),
 		Marshal: func(v any) ([]byte, error) {
 			content, err := template.ParseFS(tmpl, sp.TemplateFileName())
 			if err != nil {
@@ -97,7 +102,7 @@ func (sp *ServerProperties) Set(k, v string, write bool) error {
 		return errors.Errorf("unsupported key [%s]", k)
 	}
 	filter, fExist := serverPropertiesFilter[v]
-	if fExist && !common.Contains(filter, v) {
+	if fExist && !utils.Contains(filter, v) {
 		return errors.Errorf("unsupported value [%s]", v)
 	}
 	sp.Data[k] = v

@@ -17,7 +17,7 @@ func init() {
 type setServerPropertiesReq map[string]string
 
 func getServerProperties(c *gin.Context) error {
-	serverProperties, err := servers.CurrentServer().ServerProperties()
+	serverProperties, err := manager.CurrentServer().ServerProperties()
 	if err != nil {
 		return xgin.ErrorWithStatus(http.StatusNotFound, err)
 	}
@@ -30,7 +30,7 @@ func setServerProperties(c *gin.Context) error {
 		return err
 	}
 
-	serverProperties, err := servers.CurrentServer().ServerProperties()
+	serverProperties, err := manager.CurrentServer().ServerProperties()
 	if err != nil {
 		return err
 	}

@@ -9,40 +9,43 @@ import (
 )
 
 type Config struct {
-	Version    string
 	RootDir    string
 	SSHOptions []options.Option
 }
 
-func New(cfg Config) *Servers {
+func New(cfg Config) *ServerManager {
 	session, err := ssh.NewSession(cfg.SSHOptions...)
 	if err != nil {
 		panic(err)
 	}
+	manager := &ServerManager{
+		session: session,
+		client:  resty.New(),
+	}
+	latestVersion, err := manager.CurrentLatestVersion()
+	if err != nil {
+		panic(err)
+	}
 	server, err := NewServer(ServerConfig{
-		Version: cfg.Version,
+		Version: latestVersion,
 		RootDir: cfg.RootDir,
 		Session: session,
 	})
 	if err != nil {
 		panic(err)
 	}
-	servers := &Servers{
-		session: session,
-		current: server,
-		client:  resty.New(),
-	}
-	return servers
+	manager.current = server
+	return manager
 }
 
-type Servers struct {
+type ServerManager struct {
 	session  ssh.Session
 	current  *Server
-	previous map[string]*Server
+	versions []string
 	client   *resty.Client
 }
 
-func (servers *Servers) LatestVersion() (string, error) {
+func (manager *ServerManager) LatestVersion() (string, error) {
 	//TODO
 	/*resp, err := m.client.R().
 		Get("https://www.minecraft.net/en-us/download/server/bedrock")
@@ -50,22 +53,33 @@ func (servers *Servers) LatestVersion() (string, error) {
 		return "", errors.WithStack(err)
 	}
 	return string(resp.Body()), nil*/
-	return "1.20.62.02", nil
+	return "1.21.43.01", nil
 }
 
-func (servers *Servers) VersionScan() ([]string, error) {
+func (manager *ServerManager) CurrentLatestVersion() (string, error) {
+	//TODO
+	/*resp, err := m.client.R().
+		Get("https://www.minecraft.net/en-us/download/server/bedrock")
+	if err != nil {
+		return "", errors.WithStack(err)
+	}
+	return string(resp.Body()), nil*/
+	return "1.21.43.01", nil
+}
+
+func (manager *ServerManager) VersionScan() ([]string, error) {
 	//TODO
 	return nil, nil
 }
 
-func (servers *Servers) CurrentServer() *Server {
-	return servers.current
+func (manager *ServerManager) CurrentServer() *Server {
+	return manager.current
 }
 
-func (servers *Servers) Upgrade() error {
+func (manager *ServerManager) Upgrade() error {
 	//1. 获取最新版本
-	oldServer := servers.current
-	newVersion, err := servers.LatestVersion()
+	oldServer := manager.current
+	newVersion, err := manager.LatestVersion()
 	if err != nil {
 		return err
 	}
@@ -76,7 +90,7 @@ func (servers *Servers) Upgrade() error {
 	newServer, err := NewServer(ServerConfig{
 		Version: newVersion,
 		RootDir: oldServer.rootDir,
-		Session: servers.session,
+		Session: manager.session,
 	})
 	if err != nil {
 		return err
@@ -85,26 +99,29 @@ func (servers *Servers) Upgrade() error {
 	if err != nil {
 		return err
 	}
-	servers.current = newServer
-	servers.previous[oldServer.Version] = oldServer
+	manager.current = newServer
 	//3. 复制旧版本数据文件到新版本
-	err = servers.session.Run("cp", "-r",
+	err = manager.session.Run("cp", "-r",
 		path.Join(oldServer.ServerDir(), "world"),
-		path.Join(servers.current.ServerDir()+"/"))
+		path.Join(manager.current.ServerDir()+"/"))
 	if err != nil {
 		return err
 	}
-	err = servers.session.Run("cp",
+	err = manager.session.Run("cp",
 		path.Join(oldServer.ServerDir(), oldServer.allowList.FileName()),
-		path.Join(servers.current.ServerDir(), servers.current.allowList.FileName()))
+		path.Join(manager.current.ServerDir(), manager.current.allowList.FileName()))
 	if err != nil {
 		return err
 	}
-	err = servers.session.Run("cp",
+	err = manager.session.Run("cp",
 		path.Join(oldServer.ServerDir(), oldServer.serverProperties.FileName()),
-		path.Join(servers.current.ServerDir(), servers.current.serverProperties.FileName()))
+		path.Join(manager.current.ServerDir(), manager.current.serverProperties.FileName()))
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (manager *ServerManager) Download() error {
+	return manager.current.Download()
 }

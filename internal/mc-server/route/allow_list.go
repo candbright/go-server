@@ -14,7 +14,7 @@ func init() {
 }
 
 func getAllowList(c *gin.Context) error {
-	allowList, err := servers.CurrentServer().AllowList()
+	allowList, err := manager.CurrentServer().AllowList()
 	if err != nil {
 		return xgin.ErrorWithStatus(http.StatusNotFound, err)
 	}

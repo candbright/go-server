@@ -6,23 +6,22 @@ import (
 	"github.com/candbright/server-mc/internal/mc-server/core"
 )
 
-var servers *core.Servers
+var manager *core.ServerManager
 
 func Init() {
-	servers = core.New(
+	manager = core.New(
 		core.Config{
-			Version: config.ServerConfig.Get("mc.version"),
 			RootDir: config.ServerConfig.Get("mc.path"),
 			SSHOptions: []options.Option{
-				options.EnableSingle(),
-				options.LocalHost(),
-				//options.RemoteHostPWD(
-				//	config.ServerConfig.Get("ssh.host"),
-				//	uint16(config.ServerConfig.GetInt("ssh.port")),
-				//	config.ServerConfig.Get("ssh.username"),
-				//	config.ServerConfig.Get("ssh.password"),
-				//),
+				options.HostPWD(
+					config.ServerConfig.Get("ssh.host"),
+					uint16(config.ServerConfig.GetInt("ssh.port")),
+					config.ServerConfig.Get("ssh.username"),
+					config.ServerConfig.Get("ssh.password"),
+				),
 				options.LogPath(config.ServerConfig.Get("ssh.log.path")),
+				options.Linux(),
+				options.Single(config.ServerConfig.GetBool("server.single")),
 			},
 		},
 	)

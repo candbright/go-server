@@ -3,17 +3,19 @@ package dw
 import (
 	"encoding/json"
 	"encoding/xml"
+	"github.com/candbright/go-ssh/ssh"
 
 	"github.com/pelletier/go-toml"
 	"gopkg.in/yaml.v3"
 )
 
-func Default[T any](path string) *DataWriter[T] {
-	return Json[T](path)
+func Default[T any](session ssh.Session, path string) *DataWriter[T] {
+	return Json[T](session, path)
 }
 
-func Json[T any](path string) *DataWriter[T] {
+func Json[T any](session ssh.Session, path string) *DataWriter[T] {
 	cfg := Config{
+		Session:   session,
 		Path:      path,
 		Marshal:   json.Marshal,
 		Unmarshal: json.Unmarshal,
@@ -21,8 +23,9 @@ func Json[T any](path string) *DataWriter[T] {
 	return New[T](cfg)
 }
 
-func Xml[T any](path string) *DataWriter[T] {
+func Xml[T any](session ssh.Session, path string) *DataWriter[T] {
 	cfg := Config{
+		Session:   session,
 		Path:      path,
 		Marshal:   xml.Marshal,
 		Unmarshal: xml.Unmarshal,
@@ -30,8 +33,9 @@ func Xml[T any](path string) *DataWriter[T] {
 	return New[T](cfg)
 }
 
-func Yaml[T any](path string) *DataWriter[T] {
+func Yaml[T any](session ssh.Session, path string) *DataWriter[T] {
 	cfg := Config{
+		Session:   session,
 		Path:      path,
 		Marshal:   yaml.Marshal,
 		Unmarshal: yaml.Unmarshal,
@@ -39,8 +43,9 @@ func Yaml[T any](path string) *DataWriter[T] {
 	return New[T](cfg)
 }
 
-func Toml[T any](path string) *DataWriter[T] {
+func Toml[T any](session ssh.Session, path string) *DataWriter[T] {
 	cfg := Config{
+		Session:   session,
 		Path:      path,
 		Marshal:   toml.Marshal,
 		Unmarshal: toml.Unmarshal,

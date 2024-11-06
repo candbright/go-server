@@ -8,12 +8,13 @@ import (
 
 func init() {
 	registerRoute(func(e *gin.Engine) {
-		e.GET("/server/current/info/get", xgin.H(getCurrentServerInfo))
+		e.POST("/server/info/get", xgin.H(getCurrentServerInfo))
+		e.POST("/server/download", xgin.H(downloadServer))
 	})
 }
 
 func getCurrentServerInfo(c *gin.Context) error {
-	current := servers.CurrentServer()
+	current := manager.CurrentServer()
 	info := model.ServerInfo{
 		Version: current.Version,
 	}
@@ -38,4 +39,8 @@ func getCurrentServerInfo(c *gin.Context) error {
 	}
 
 	return xgin.Json(info)
+}
+
+func downloadServer(c *gin.Context) error {
+	return manager.Download()
 }

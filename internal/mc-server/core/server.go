@@ -47,10 +47,7 @@ func NewServer(cfg ServerConfig) (*Server, error) {
 		return nil, err
 	}
 	server.process = process
-	exist, err := server.ServerExist()
-	if err != nil {
-		return nil, err
-	}
+	exist, _ := server.ServerExist()
 	if !exist {
 		return server, nil
 	}
@@ -126,10 +123,12 @@ func (server *Server) AllowList() (*AllowList, error) {
 
 func (server *Server) Reload() error {
 	server.serverProperties = NewServerProperties(ServerPropertiesConfig{
+		Session: server.session,
 		Version: server.Version,
 		RootDir: server.ServerDir(),
 	})
 	server.allowList = NewAllowList(AllowListConfig{
+		Session: server.session,
 		Version: server.Version,
 		RootDir: server.ServerDir(),
 	})
@@ -152,8 +151,8 @@ func (server *Server) Download() error {
 	}
 	//不存在当前版本的zip文件，先下载
 	if !existZ {
-		progressPath := path.Join(server.rootDir, fmt.Sprintf("progress-%s.log", server.Version))
-		err = server.session.Run("wget", "--no-check-certificate", fmt.Sprintf("--timeout=%d", 600), "-o", progressPath, server.DownloadUrl(), "-P", server.rootDir)
+		downloadLogPath := path.Join(server.rootDir, fmt.Sprintf("download-%s.log", server.Version))
+		err = server.session.Run("wget", "--no-check-certificate", fmt.Sprintf("--timeout=%d", 600), "-o", downloadLogPath, server.DownloadUrl(), "-P", server.rootDir)
 		if err != nil {
 			return err
 		}

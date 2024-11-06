@@ -1,12 +1,12 @@
 package dw
 
 import (
-	"os"
-
+	"github.com/candbright/go-ssh/ssh"
 	"github.com/pkg/errors"
 )
 
 type Config struct {
+	Session   ssh.Session
 	Path      string
 	Marshal   func(v any) ([]byte, error)
 	Unmarshal func(data []byte, v any) error
@@ -18,6 +18,13 @@ type DataWriter[T any] struct {
 }
 
 func New[T any](cfg Config) *DataWriter[T] {
+	if cfg.Session == nil {
+		session, err := ssh.NewSession()
+		if err != nil {
+			panic(err)
+		}
+		cfg.Session = session
+	}
 	manager := &DataWriter[T]{
 		cfg: cfg,
 	}
@@ -29,7 +36,7 @@ func New[T any](cfg Config) *DataWriter[T] {
 }
 
 func (manager *DataWriter[T]) Read() error {
-	fileBytes, err := os.ReadFile(manager.cfg.Path)
+	fileBytes, err := manager.cfg.Session.ReadFile(manager.cfg.Path)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -45,7 +52,7 @@ func (manager *DataWriter[T]) Write() error {
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	err = os.WriteFile(manager.cfg.Path, marshalBytes, 0644)
+	err = manager.cfg.Session.WriteString(manager.cfg.Path, string(marshalBytes))
 	if err != nil {
 		return errors.WithStack(err)
 	}
