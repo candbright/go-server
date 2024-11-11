@@ -84,7 +84,7 @@ func (manager *ServerManager) Upgrade() error {
 		return err
 	}
 	//2. 若最新版本和当前版本不同，则下载最新版本
-	if newVersion == oldServer.Version {
+	if newVersion == oldServer.version {
 		return nil
 	}
 	newServer, err := NewServer(ServerConfig{
@@ -120,8 +120,4 @@ func (manager *ServerManager) Upgrade() error {
 		return err
 	}
 	return nil
-}
-
-func (manager *ServerManager) Download() error {
-	return manager.current.Download()
 }

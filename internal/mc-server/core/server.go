@@ -3,10 +3,11 @@ package core
 import (
 	"embed"
 	"fmt"
-	"path"
-
+	"github.com/candbright/go-log/log"
 	"github.com/candbright/go-ssh/ssh"
 	"github.com/pkg/errors"
+	"path"
+	"sync"
 )
 
 //go:embed template
@@ -23,7 +24,9 @@ type ServerConfig struct {
 }
 
 type Server struct {
-	Version          string
+	downloading      bool
+	downloadMutex    *sync.Mutex
+	version          string
 	rootDir          string
 	session          ssh.Session
 	process          *Process
@@ -34,9 +37,10 @@ type Server struct {
 func NewServer(cfg ServerConfig) (*Server, error) {
 
 	server := &Server{
-		Version: cfg.Version,
-		rootDir: cfg.RootDir,
-		session: cfg.Session,
+		version:       cfg.Version,
+		rootDir:       cfg.RootDir,
+		session:       cfg.Session,
+		downloadMutex: &sync.Mutex{},
 	}
 	process, err := NewProcess(ProcessConfig{
 		Version: cfg.Version,
@@ -59,11 +63,11 @@ func NewServer(cfg ServerConfig) (*Server, error) {
 }
 
 func (server *Server) DownloadUrl() string {
-	return fmt.Sprintf("https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-%s.zip", server.Version)
+	return fmt.Sprintf("https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-%s.zip", server.version)
 }
 
 func (server *Server) ZipFileName() string {
-	return fmt.Sprintf("bedrock-server-%s.zip", server.Version)
+	return fmt.Sprintf("bedrock-server-%s.zip", server.version)
 }
 
 func (server *Server) ZipFile() string {
@@ -76,7 +80,7 @@ func (server *Server) ZipExist() (bool, error) {
 }
 
 func (server *Server) ServerDirName() string {
-	return fmt.Sprintf("server-%s", server.Version)
+	return fmt.Sprintf("server-%s", server.version)
 }
 
 func (server *Server) ServerDir() string {
@@ -86,6 +90,10 @@ func (server *Server) ServerDir() string {
 func (server *Server) ServerExist() (bool, error) {
 	//服务器目录是否存在
 	return server.session.Exists(server.ServerDir())
+}
+
+func (server *Server) Version() string {
+	return server.version
 }
 
 func (server *Server) Active() (bool, error) {
@@ -124,14 +132,32 @@ func (server *Server) AllowList() (*AllowList, error) {
 func (server *Server) Reload() error {
 	server.serverProperties = NewServerProperties(ServerPropertiesConfig{
 		Session: server.session,
-		Version: server.Version,
+		Version: server.version,
 		RootDir: server.ServerDir(),
 	})
 	server.allowList = NewAllowList(AllowListConfig{
 		Session: server.session,
-		Version: server.Version,
+		Version: server.version,
 		RootDir: server.ServerDir(),
 	})
+	return nil
+}
+
+func (server *Server) StartDownload() error {
+	server.downloadMutex.Lock()
+	defer server.downloadMutex.Unlock()
+	if !server.downloading {
+		server.downloading = true
+		go func() {
+			err := server.Download()
+			if err != nil {
+				log.Error(err)
+			}
+			server.downloading = false
+		}()
+	} else {
+		return errors.New("server is already downloading")
+	}
 	return nil
 }
 
@@ -151,7 +177,7 @@ func (server *Server) Download() error {
 	}
 	//不存在当前版本的zip文件，先下载
 	if !existZ {
-		downloadLogPath := path.Join(server.rootDir, fmt.Sprintf("download-%s.log", server.Version))
+		downloadLogPath := path.Join(server.rootDir, fmt.Sprintf("download-%s.log", server.version))
 		err = server.session.Run("wget", "--no-check-certificate", fmt.Sprintf("--timeout=%d", 600), "-o", downloadLogPath, server.DownloadUrl(), "-P", server.rootDir)
 		if err != nil {
 			return err
@@ -173,6 +199,10 @@ func (server *Server) Download() error {
 		return err
 	}
 	return nil
+}
+
+func (server *Server) Downloading() bool {
+	return server.downloading
 }
 
 func (server *Server) Delete() error {

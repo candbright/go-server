@@ -9,14 +9,19 @@ import (
 func init() {
 	registerRoute(func(e *gin.Engine) {
 		e.POST("/server/info/get", xgin.H(getCurrentServerInfo))
-		e.POST("/server/download", xgin.H(downloadServer))
+		e.POST("/server/download_start", xgin.H(startDownloadServer))
+		e.POST("/server/download_status", xgin.H(statusDownloadServer))
 	})
+}
+
+type downloadStatusRsp struct {
+	Downloading bool `json:"downloading"`
 }
 
 func getCurrentServerInfo(c *gin.Context) error {
 	current := manager.CurrentServer()
 	info := model.ServerInfo{
-		Version: current.Version,
+		Version: current.Version(),
 	}
 
 	exist, err := current.ServerExist()
@@ -41,6 +46,12 @@ func getCurrentServerInfo(c *gin.Context) error {
 	return xgin.Json(info)
 }
 
-func downloadServer(c *gin.Context) error {
-	return manager.Download()
+func startDownloadServer(c *gin.Context) error {
+	return manager.CurrentServer().StartDownload()
+}
+
+func statusDownloadServer(c *gin.Context) error {
+	return xgin.Json(downloadStatusRsp{
+		Downloading: manager.CurrentServer().Downloading(),
+	})
 }
