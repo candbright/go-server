@@ -6,6 +6,8 @@ github.com/candbright/go-core v1.2.2 h1:aalPzyC0JAQVbP16otkgPNPhGDXbsFua5LlFb/Gc
 github.com/candbright/go-core v1.2.2/go.mod h1:fwQONh+svtfHQOELyG7yCAh4KjcdHghygX8nLT2yYsc=
 github.com/candbright/go-log v1.3.3 h1:1HH1XQaYtLYrs1Lj7gTayPb3OHOw860sXOj0i6seLRQ=
 github.com/candbright/go-log v1.3.3/go.mod h1:hQVfYyTFjNQ1iWgZFVq79wxt3PhcJuJ0xSp8BaPbxt8=
+github.com/candbright/go-log v1.4.0 h1:JO/Z7kyT2pXaV4lg/FPiHShNWJEqqQcqBD0ZiPEjVqE=
+github.com/candbright/go-log v1.4.0/go.mod h1:hQVfYyTFjNQ1iWgZFVq79wxt3PhcJuJ0xSp8BaPbxt8=
 github.com/candbright/go-ssh v1.0.1 h1:+48S4wGTYQOhogZsxtDtBEBnwWhuh7c+gypd+BoQAUg=
 github.com/candbright/go-ssh v1.0.1/go.mod h1:DwEqhZQwjvBRaGEQXzu17MSI1sW/vS02jnhHO0joC9k=
 github.com/candbright/go-ssh v1.0.3 h1:f3X0VOGnwyBu9ugsHswXresp2y0L1rOMewUdObhkntE=

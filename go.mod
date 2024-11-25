@@ -39,7 +39,7 @@ require (
 )
 
 require (
-	github.com/candbright/go-log v1.3.3
+	github.com/candbright/go-log v1.4.0
 	github.com/candbright/go-ssh v1.0.3
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-resty/resty/v2 v2.11.0

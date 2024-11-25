@@ -21,7 +21,7 @@ func Init() {
 				),
 				options.LogPath(config.ServerConfig.Get("ssh.log.path")),
 				options.Linux(),
-				options.Single(config.ServerConfig.GetBool("server.single")),
+				options.Single(config.ServerConfig.GetBool("ssh.single")),
 			},
 		},
 	)

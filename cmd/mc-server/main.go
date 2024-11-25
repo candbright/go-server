@@ -45,6 +45,7 @@ func main() {
 			return level
 		}),
 		options.Format(&logrus.JSONFormatter{}),
+		options.GlobalField("app_name", config.ServerConfig.Get("server.name")),
 	)
 	if err != nil {
 		panic(err)

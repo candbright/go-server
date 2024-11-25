@@ -25,7 +25,7 @@ func NewServer() *Server {
 
 func (s *Server) Serve() {
 	ctx, cancel := context.WithCancel(context.Background())
-	s.StartHTTPServer(ctx)
+	s.StartHTTPServer()
 	s.StartWatcher(ctx)
 	s.WaitSignal()
 	cancel()
@@ -37,13 +37,13 @@ func (s *Server) StartWatcher(ctx context.Context) {
 	s.g.Add(1)
 	go func() {
 		defer s.g.Done()
-		backupTick := time.NewTicker(time.Hour * 1)
-		defer backupTick.Stop()
+		testTicker := time.NewTicker(time.Hour * 1)
+		defer testTicker.Stop()
 	LOOP:
 		for {
 			select {
-			case <-backupTick.C:
-				backup()
+			case <-testTicker.C:
+				testLoop()
 			case <-ctx.Done():
 				break LOOP
 			}
@@ -52,7 +52,7 @@ func (s *Server) StartWatcher(ctx context.Context) {
 	}()
 }
 
-func (s *Server) StartHTTPServer(ctx context.Context) {
+func (s *Server) StartHTTPServer() {
 	log.Info("Start HTTP Server...")
 	s.g.Add(1)
 	go func() {

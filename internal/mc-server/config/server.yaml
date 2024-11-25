@@ -3,7 +3,6 @@ server:
   port: 11223
   username: admin
   password: admin@123
-  single: false
 log:
   path:
     windows: D:\log\server-mc\server.log
@@ -16,6 +15,7 @@ ssh:
   port: 22
   username: root
   password: admin@123
+  single: false
   log:
     path:
       windows: D:\log\server-mc\ssh.log
