@@ -1,16 +1,16 @@
 package route
 
 import (
-	"github.com/candbright/server-mc/internal/mc-server/model"
-	"github.com/candbright/server-mc/pkg/xgin"
+	"github.com/candbright/go-server/internal/mc-server/model"
+	"github.com/candbright/go-server/pkg/rest"
 	"github.com/gin-gonic/gin"
 )
 
 func init() {
 	registerRoute(func(e *gin.Engine) {
-		e.POST("/server/info/get", xgin.H(getCurrentServerInfo))
-		e.POST("/server/download_start", xgin.H(startDownloadServer))
-		e.POST("/server/download_status", xgin.H(statusDownloadServer))
+		e.POST("/server/info/get", rest.H(getCurrentServerInfo))
+		e.POST("/server/download_start", rest.H(startDownloadServer))
+		e.POST("/server/download_status", rest.H(statusDownloadServer))
 	})
 }
 
@@ -43,7 +43,7 @@ func getCurrentServerInfo(c *gin.Context) error {
 		info.AllowList = allowList.GetAll()
 	}
 
-	return xgin.Json(info)
+	return rest.Json(info)
 }
 
 func startDownloadServer(c *gin.Context) error {
@@ -51,7 +51,7 @@ func startDownloadServer(c *gin.Context) error {
 }
 
 func statusDownloadServer(c *gin.Context) error {
-	return xgin.Json(downloadStatusRsp{
+	return rest.Json(downloadStatusRsp{
 		Downloading: manager.CurrentServer().Downloading(),
 	})
 }

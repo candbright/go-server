@@ -8,8 +8,8 @@ import (
 	"html/template"
 	"path"
 
-	"github.com/candbright/server-mc/internal/mc-server/utils"
-	"github.com/candbright/server-mc/pkg/dw"
+	"github.com/candbright/go-server/internal/mc-server/utils"
+	"github.com/candbright/go-server/pkg/dw"
 	"github.com/magiconair/properties"
 	"github.com/pkg/errors"
 )

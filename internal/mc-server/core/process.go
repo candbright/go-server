@@ -3,7 +3,7 @@ package core
 import (
 	"fmt"
 	"github.com/candbright/go-log/log"
-	"github.com/candbright/server-mc/internal/mc-server/config"
+	"github.com/candbright/go-server/pkg/config"
 	"github.com/pkg/errors"
 	"os"
 	"path"
@@ -112,7 +112,7 @@ func (p *Process) WorldsDir() string {
 }
 
 func (p *Process) BackupDir() string {
-	return path.Join(config.ServerConfig.Get("mc.path"), fmt.Sprintf("backup-"+p.RootDir))
+	return path.Join(config.Global.Get("mc.path"), fmt.Sprintf("backup-"+p.RootDir))
 }
 
 func (p *Process) stopBackup() {

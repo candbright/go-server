@@ -3,14 +3,14 @@ package route
 import (
 	"net/http"
 
-	"github.com/candbright/server-mc/pkg/xgin"
+	"github.com/candbright/go-server/pkg/rest"
 	"github.com/gin-gonic/gin"
 )
 
 func init() {
 	registerRoute(func(e *gin.Engine) {
-		e.POST("/server/current/server_properties/get", xgin.H(getServerProperties))
-		e.POST("/server/current/server_properties/set", xgin.H(setServerProperties))
+		e.POST("/server/current/server_properties/get", rest.H(getServerProperties))
+		e.POST("/server/current/server_properties/set", rest.H(setServerProperties))
 	})
 }
 
@@ -19,9 +19,9 @@ type setServerPropertiesReq map[string]string
 func getServerProperties(c *gin.Context) error {
 	serverProperties, err := manager.CurrentServer().ServerProperties()
 	if err != nil {
-		return xgin.ErrorWithStatus(http.StatusNotFound, err)
+		return rest.ErrorWithStatus(http.StatusNotFound, err)
 	}
-	return xgin.Json(serverProperties.GetAll())
+	return rest.Json(serverProperties.GetAll())
 }
 
 func setServerProperties(c *gin.Context) error {

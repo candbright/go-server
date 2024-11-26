@@ -1,12 +1,12 @@
-module github.com/candbright/server-mc
+module github.com/candbright/go-server
 
 go 1.22
 
 require (
-	github.com/candbright/go-core v1.2.2
 	github.com/magiconair/properties v1.8.7
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.0
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
@@ -35,12 +35,11 @@ require (
 	golang.org/x/net v0.25.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
 require (
 	github.com/candbright/go-log v1.4.0
-	github.com/candbright/go-ssh v1.0.3
+	github.com/candbright/go-ssh v1.1.1
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-resty/resty/v2 v2.11.0
 	github.com/pelletier/go-toml v1.9.5

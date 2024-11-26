@@ -2,10 +2,10 @@ package server
 
 import (
 	"context"
-	"github.com/candbright/go-core/rest/handler"
 	"github.com/candbright/go-log/log"
-	"github.com/candbright/server-mc/internal/mc-server/config"
-	"github.com/candbright/server-mc/internal/mc-server/route"
+	"github.com/candbright/go-server/internal/mc-server/route"
+	"github.com/candbright/go-server/pkg/config"
+	"github.com/candbright/go-server/pkg/rest/handler"
 	"github.com/gin-gonic/gin"
 	"os"
 	"os/signal"
@@ -60,14 +60,14 @@ func (s *Server) StartHTTPServer() {
 		engine := gin.New()
 		engine.Use(gin.BasicAuth(
 			map[string]string{
-				config.ServerConfig.Get("server.username"): config.ServerConfig.Get("server.password"),
+				config.Global.Get("server.username"): config.Global.Get("server.password"),
 			},
 		))
 		engine.Use(handler.LogHandler())
 		engine.Use(gin.Recovery())
 		route.Init()
 		route.Incubate(engine)
-		_ = engine.Run(":" + strconv.Itoa(config.ServerConfig.GetInt("server.port")))
+		_ = engine.Run(":" + strconv.Itoa(config.Global.GetInt("server.port")))
 		log.Warn("Exit HTTP server!")
 	}()
 }

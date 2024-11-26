@@ -5,8 +5,8 @@ import (
 	"github.com/candbright/go-ssh/ssh"
 	"path"
 
-	"github.com/candbright/server-mc/internal/mc-server/core/model"
-	"github.com/candbright/server-mc/pkg/dw"
+	"github.com/candbright/go-server/internal/mc-server/core/model"
+	"github.com/candbright/go-server/pkg/dw"
 )
 
 type AllowList struct {
