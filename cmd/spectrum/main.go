@@ -22,14 +22,38 @@ func main() {
 			c.JSON(400, err)
 			return
 		}
-		list := spectrum.RandomBy(spectrum.FourNotesRunMap,
-			numInt,
-			spectrum.ResetRules(
-				spectrum.RuleSameFoot,
-				spectrum.RuleReverse,
-				spectrum.RuleDiagonal,
-				spectrum.RuleNoRepeat,
-			))
+		mode := c.Query("mode")
+		if mode == "" {
+			c.JSON(400, errors.New("mode not set"))
+			return
+		}
+		modeInt, err := strconv.Atoi(mode)
+		if err != nil {
+			c.JSON(400, err)
+			return
+		}
+
+		var list *spectrum.List[int]
+		switch modeInt {
+		case 0:
+			list = spectrum.RandomBy(spectrum.FourNotesRunMap,
+				numInt,
+				spectrum.ResetRules(
+					spectrum.RuleSameFoot,
+					spectrum.RuleReverse,
+					spectrum.RuleDiagonal,
+					spectrum.RuleNoRepeat,
+				))
+		case 1:
+			numInt = numInt * 2
+			list = spectrum.RandomBy(spectrum.TwoNotesMap,
+				numInt,
+				spectrum.ResetRules(
+					spectrum.RuleSameFoot,
+					spectrum.RuleReverse,
+				))
+		}
+
 		arr := list.ToArray()
 		c.JSON(200, arr)
 	})
