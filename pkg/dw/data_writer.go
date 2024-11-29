@@ -40,6 +40,9 @@ func (manager *DataWriter[T]) Read() error {
 	if err != nil {
 		return errors.WithStack(err)
 	}
+	if len(fileBytes) == 0 {
+		return nil
+	}
 	err = manager.cfg.Unmarshal(fileBytes, &manager.Data)
 	if err != nil {
 		return errors.WithStack(err)

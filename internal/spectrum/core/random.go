@@ -1,4 +1,4 @@
-package spectrum
+package core
 
 import "math/rand"
 

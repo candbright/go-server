@@ -1,7 +1,7 @@
 package route
 
 import (
-	"github.com/candbright/go-server/internal/mc-server/core"
+	"github.com/candbright/go-server/internal/mc/core"
 	"github.com/candbright/go-server/pkg/config"
 	"github.com/candbright/go-ssh/ssh/options"
 )

@@ -1,13 +1,14 @@
 package route
 
 import (
-	"github.com/candbright/go-server/internal/mc-server/model"
+	"context"
+	"github.com/candbright/go-server/internal/mc/model"
 	"github.com/candbright/go-server/pkg/rest"
 	"github.com/gin-gonic/gin"
 )
 
 func init() {
-	registerRoute(func(e *gin.Engine) {
+	RegisterRoute(func(e *gin.Engine) {
 		e.POST("/server/info/get", rest.H(getCurrentServerInfo))
 		e.POST("/server/download_start", rest.H(startDownloadServer))
 		e.POST("/server/download_status", rest.H(statusDownloadServer))
@@ -18,7 +19,7 @@ type downloadStatusRsp struct {
 	Downloading bool `json:"downloading"`
 }
 
-func getCurrentServerInfo(c *gin.Context) error {
+func getCurrentServerInfo(c *gin.Context, ctx context.Context) error {
 	current := manager.CurrentServer()
 	info := model.ServerInfo{
 		Version: current.Version(),
@@ -46,11 +47,11 @@ func getCurrentServerInfo(c *gin.Context) error {
 	return rest.Json(info)
 }
 
-func startDownloadServer(c *gin.Context) error {
+func startDownloadServer(c *gin.Context, ctx context.Context) error {
 	return manager.CurrentServer().StartDownload()
 }
 
-func statusDownloadServer(c *gin.Context) error {
+func statusDownloadServer(c *gin.Context, ctx context.Context) error {
 	return rest.Json(downloadStatusRsp{
 		Downloading: manager.CurrentServer().Downloading(),
 	})

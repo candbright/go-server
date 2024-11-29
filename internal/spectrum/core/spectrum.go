@@ -1,6 +1,16 @@
-package spectrum
+package core
 
-// 0: left up 1: right up 2: middle 3: left down 4: right down
+type Spectrum struct {
+	FirstFoot  int // 0: left 1: right
+	*List[int]     // -1: blank 0: left up 1: right up 2: middle 3: left down 4: right down
+}
+
+func NewSpectrum(firstFoot int, notes ...int) *Spectrum {
+	return &Spectrum{
+		FirstFoot: firstFoot,
+		List:      NewList[int](notes...),
+	}
+}
 
 var TwoNotesMap map[int]*List[int]
 var FourNotesRunMap map[int]*List[int]

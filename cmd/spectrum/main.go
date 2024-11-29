@@ -1,61 +1,66 @@
 package main
 
 import (
+	"flag"
+	"fmt"
+	"github.com/candbright/go-log/log"
+	"github.com/candbright/go-log/options"
+	"github.com/candbright/go-server/internal/dao"
 	"github.com/candbright/go-server/internal/spectrum"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
-	"strconv"
+	"github.com/candbright/go-server/pkg/config"
+	"github.com/sirupsen/logrus"
 )
 
+var _BUILD_ = ""
+
+var (
+	help       bool
+	version    bool
+	configFile string
+)
+
+func init() {
+	flag.BoolVar(&help, "h", false, "print help")
+	flag.BoolVar(&version, "v", false, "print version")
+	flag.StringVar(&configFile, "c", "conf/config.yaml", "configuration file path")
+}
+
 func main() {
-	engine := gin.New()
-	engine.Use(cors.Default())
-	engine.GET("/spectrum/random/get", func(c *gin.Context) {
-		num := c.Query("num")
-		if num == "" {
-			c.JSON(400, errors.New("num not set"))
-			return
-		}
-		numInt, err := strconv.Atoi(num)
-		if err != nil {
-			c.JSON(400, err)
-			return
-		}
-		mode := c.Query("mode")
-		if mode == "" {
-			c.JSON(400, errors.New("mode not set"))
-			return
-		}
-		modeInt, err := strconv.Atoi(mode)
-		if err != nil {
-			c.JSON(400, err)
-			return
-		}
+	flag.Parse()
+	if help {
+		flag.Usage()
+		return
+	}
 
-		var list *spectrum.List[int]
-		switch modeInt {
-		case 0:
-			list = spectrum.RandomBy(spectrum.FourNotesRunMap,
-				numInt,
-				spectrum.ResetRules(
-					spectrum.RuleSameFoot,
-					spectrum.RuleReverse,
-					spectrum.RuleDiagonal,
-					spectrum.RuleNoRepeat,
-				))
-		case 1:
-			numInt = numInt * 2
-			list = spectrum.RandomBy(spectrum.TwoNotesMap,
-				numInt,
-				spectrum.ResetRules(
-					spectrum.RuleSameFoot,
-					spectrum.RuleReverse,
-				))
-		}
+	if version {
+		fmt.Println(_BUILD_)
+		return
+	}
 
-		arr := list.ToArray()
-		c.JSON(200, arr)
-	})
-	_ = engine.Run(":18001")
+	err := config.InitFromFile(configFile)
+	if err != nil {
+		fmt.Println("Load config failed! error: ", err)
+		return
+	}
+
+	err = log.Init(
+		options.Path(config.Global.Get("log.path")),
+		options.Level(func() logrus.Level {
+			level, err := logrus.ParseLevel(config.Global.Get("log.level"))
+			if err != nil {
+				return logrus.InfoLevel
+			}
+			return level
+		}),
+		options.Format(&logrus.JSONFormatter{}),
+		options.GlobalField("app_name", config.Global.Get("server.name")),
+	)
+	if err != nil {
+		panic(err)
+	}
+	err = dao.Init(config.Global.Get("dao.driver"))
+	if err != nil {
+		panic(err)
+	}
+	spectrum.Serve()
 }

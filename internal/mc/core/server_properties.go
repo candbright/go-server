@@ -4,11 +4,11 @@ import (
 	"bytes"
 	_ "embed"
 	"fmt"
+	"github.com/candbright/go-server/internal/base/utils"
 	"github.com/candbright/go-ssh/ssh"
 	"html/template"
 	"path"
 
-	"github.com/candbright/go-server/internal/mc-server/utils"
 	"github.com/candbright/go-server/pkg/dw"
 	"github.com/magiconair/properties"
 	"github.com/pkg/errors"

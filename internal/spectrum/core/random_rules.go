@@ -1,4 +1,4 @@
-package spectrum
+package core
 
 func ResetRules(rules ...func(a, b *List[int]) bool) func(a, b *List[int]) bool {
 	return func(a, b *List[int]) bool {
@@ -28,7 +28,7 @@ func RuleReverse(a, b *List[int]) bool {
 	if a.Tail.Prev != nil && a.Tail.Prev.Data == 0 && a.Tail.Data == 3 && b.Head.Data == 4 {
 		return true
 	}
-	if a.Tail.Prev != nil && a.Tail.Prev.Data == 4 && a.Tail.Data == 1 && b.Head.Data == 3 {
+	if a.Tail.Prev != nil && a.Tail.Prev.Data == 3 && a.Tail.Data == 0 && b.Head.Data == 1 {
 		return true
 	}
 	return false

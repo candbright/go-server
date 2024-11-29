@@ -1,6 +1,7 @@
 package route
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/candbright/go-server/pkg/rest"
@@ -8,7 +9,7 @@ import (
 )
 
 func init() {
-	registerRoute(func(e *gin.Engine) {
+	RegisterRoute(func(e *gin.Engine) {
 		e.POST("/server/current/server_properties/get", rest.H(getServerProperties))
 		e.POST("/server/current/server_properties/set", rest.H(setServerProperties))
 	})
@@ -16,7 +17,7 @@ func init() {
 
 type setServerPropertiesReq map[string]string
 
-func getServerProperties(c *gin.Context) error {
+func getServerProperties(c *gin.Context, ctx context.Context) error {
 	serverProperties, err := manager.CurrentServer().ServerProperties()
 	if err != nil {
 		return rest.ErrorWithStatus(http.StatusNotFound, err)
@@ -24,7 +25,7 @@ func getServerProperties(c *gin.Context) error {
 	return rest.Json(serverProperties.GetAll())
 }
 
-func setServerProperties(c *gin.Context) error {
+func setServerProperties(c *gin.Context, ctx context.Context) error {
 	req := new(setServerPropertiesReq)
 	if err := c.ShouldBindJSON(req); err != nil {
 		return err

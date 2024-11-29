@@ -1,4 +1,4 @@
-package spectrum
+package core
 
 type Node[T any] struct {
 	Data T

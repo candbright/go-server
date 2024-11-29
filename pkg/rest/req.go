@@ -1,15 +1,25 @@
 package rest
 
 import (
+	"context"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 )
 
-func H(f func(c *gin.Context) error) func(c *gin.Context) {
+func H(f func(c *gin.Context, ctx context.Context) error) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		err := f(c)
+		timeout := 6 * time.Second
+		t, err := strconv.ParseInt(c.Query("timeout"), 10, 64)
+		if err == nil && t > 0 {
+			timeout = time.Duration(t) * time.Second
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+		err = f(c, ctx)
 		if err == nil {
 			c.JSON(http.StatusNoContent, nil)
 			return

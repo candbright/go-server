@@ -1,0 +1,17 @@
+server:
+  name: server-spectrum
+  port: 18001
+  username: admin
+  password: admin@123
+log:
+  path:
+    windows: D:\log\server-spectrum\server.log
+    linux: /var/log/server-spectrum/server.log
+  level:
+    default: debug
+    env: ${MS_LOG_LEVEL}
+dao:
+  driver: native
+  path:
+    windows: D:\log\server-spectrum\data
+    linux: /data/native/spectrum

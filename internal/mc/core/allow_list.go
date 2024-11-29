@@ -5,7 +5,7 @@ import (
 	"github.com/candbright/go-ssh/ssh"
 	"path"
 
-	"github.com/candbright/go-server/internal/mc-server/core/model"
+	"github.com/candbright/go-server/internal/mc/core/model"
 	"github.com/candbright/go-server/pkg/dw"
 )
 

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/candbright/go-log/log"
 	"github.com/candbright/go-log/options"
-	server "github.com/candbright/go-server/internal/mc-server"
+	"github.com/candbright/go-server/internal/mc"
 	"github.com/candbright/go-server/pkg/config"
 	"github.com/sirupsen/logrus"
 )
@@ -57,6 +57,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	s := server.NewServer()
-	s.Serve()
+	mc.Serve()
 }

@@ -4,7 +4,7 @@ import "github.com/gin-gonic/gin"
 
 var routeIncubators []func(*gin.Engine)
 
-func registerRoute(f func(*gin.Engine)) {
+func RegisterRoute(f func(*gin.Engine)) {
 	routeIncubators = append(routeIncubators, f)
 }
 
