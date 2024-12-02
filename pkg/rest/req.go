@@ -12,7 +12,7 @@ import (
 
 func H(f func(c *gin.Context, ctx context.Context) error) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		timeout := 6 * time.Second
+		timeout := 10 * time.Second
 		t, err := strconv.ParseInt(c.Query("timeout"), 10, 64)
 		if err == nil && t > 0 {
 			timeout = time.Duration(t) * time.Second

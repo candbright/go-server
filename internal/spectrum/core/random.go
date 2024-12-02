@@ -2,19 +2,19 @@ package core
 
 import "math/rand"
 
-func RandomBy(sourceMap map[int]*List[int], num int, needReset func(a, b *List[int]) bool) *List[int] {
+func RandomBy(source []*Spectrum, num int, needReset func(a *List[int], b *Spectrum) bool) *List[int] {
 	list := NewList[int]()
 	for i := 0; i < num; i++ {
-		randomBy(sourceMap, list, needReset)
+		randomBy(source, list, needReset)
 	}
 	return list
 }
 
-func randomBy(sourceMap map[int]*List[int], list *List[int], needReset func(a, b *List[int]) bool) {
-	l := sourceMap[rand.Intn(len(sourceMap))]
+func randomBy(source []*Spectrum, list *List[int], needReset func(a *List[int], b *Spectrum) bool) {
+	l := source[rand.Intn(len(source))]
 	if needReset(list, l) {
-		randomBy(sourceMap, list, needReset)
+		randomBy(source, list, needReset)
 	} else {
-		list.Concat(l)
+		list.Concat(l.List)
 	}
 }

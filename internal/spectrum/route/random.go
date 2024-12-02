@@ -39,7 +39,7 @@ func getRandom(c *gin.Context, ctx context.Context) error {
 		list = core.RandomBy(core.FourNotesRunMap,
 			numInt,
 			core.ResetRules(
-				core.RuleSameFoot,
+				core.RuleSameNote,
 				core.RuleReverse,
 				core.RuleDiagonal,
 				core.RuleNoRepeat,
@@ -49,7 +49,7 @@ func getRandom(c *gin.Context, ctx context.Context) error {
 		list = core.RandomBy(core.TwoNotesMap,
 			numInt,
 			core.ResetRules(
-				core.RuleSameFoot,
+				core.RuleSameNote,
 				core.RuleReverse,
 				core.RuleDiagonal,
 			))
@@ -58,7 +58,7 @@ func getRandom(c *gin.Context, ctx context.Context) error {
 		list = core.RandomBy(core.TwoNotesMap,
 			numInt,
 			core.ResetRules(
-				core.RuleSameFoot,
+				core.RuleSameNote,
 				core.RuleReverse,
 			))
 	}

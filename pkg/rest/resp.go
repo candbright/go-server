@@ -9,16 +9,25 @@ const UnknownErr = -1
 
 type HTTPError struct {
 	HttpStatus int         `json:"-"`
-	Code       int         `json:"code"`
+	Code       int         `json:"code,omitempty"`
 	Err        error       `json:"error,omitempty"`
 	Data       interface{} `json:"data,omitempty"`
 }
 
-func (resp HTTPError) Error() string {
-	if resp.Err == nil {
+func (err HTTPError) Error() string {
+	if err.Err == nil {
 		return ""
 	}
-	return fmt.Sprintf("err code:%d\nstatus code:%d\nerr message:%s", resp.Code, resp.HttpStatus, resp.Err)
+	return fmt.Sprintf("err code:%d\nstatus code:%d\nerr message:%s", err.Code, err.HttpStatus, err.Err)
+}
+
+func (err HTTPError) WithCode(code int) HTTPError {
+	return HTTPError{
+		HttpStatus: err.HttpStatus,
+		Code:       code,
+		Err:        err.Err,
+		Data:       err.Data,
+	}
 }
 
 func Json(data interface{}) HTTPError {
@@ -28,7 +37,7 @@ func Json(data interface{}) HTTPError {
 	}
 }
 
-func ErrorWithStatus(status int, err error) HTTPError {
+func ErrorWithStatus(err error, status int) HTTPError {
 	return HTTPError{
 		HttpStatus: status,
 		Code:       UnknownErr,
@@ -46,4 +55,19 @@ func (err CodeError) Error() string {
 		return ""
 	}
 	return fmt.Sprintf("err code:%d\nerr message:%s", err.Code, err.Err)
+}
+
+func ErrorWithCode(err error, code int) CodeError {
+	return CodeError{
+		Code: code,
+		Err:  err,
+	}
+}
+
+func (err CodeError) WithStatus(status int) HTTPError {
+	return HTTPError{
+		HttpStatus: status,
+		Code:       err.Code,
+		Err:        err.Err,
+	}
 }

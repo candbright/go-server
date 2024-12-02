@@ -7,6 +7,7 @@ type Node[T any] struct {
 }
 
 type List[T any] struct {
+	Len  int
 	Head *Node[T]
 	Tail *Node[T]
 }
@@ -30,6 +31,7 @@ func (list *List[T]) Append(data T) {
 		newNode.Prev = list.Tail
 		list.Tail = newNode
 	}
+	list.Len++
 }
 
 func (list *List[T]) Concat(other *List[T]) {
@@ -41,11 +43,19 @@ func (list *List[T]) Concat(other *List[T]) {
 }
 
 func (list *List[T]) ToArray() []T {
-	arr := make([]T, 0)
+	arr := make([]T, list.Len)
 	current := list.Head
-	for current != nil {
-		arr = append(arr, current.Data)
+	for i := 0; i < list.Len; i++ {
+		arr[i] = current.Data
 		current = current.Next
 	}
 	return arr
+}
+
+func (list *List[T]) ForRange(f func(data T)) {
+	current := list.Head
+	for current != nil {
+		f(current.Data)
+		current = current.Next
+	}
 }

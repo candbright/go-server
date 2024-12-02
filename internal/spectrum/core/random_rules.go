@@ -1,7 +1,9 @@
 package core
 
-func ResetRules(rules ...func(a, b *List[int]) bool) func(a, b *List[int]) bool {
-	return func(a, b *List[int]) bool {
+import "github.com/candbright/go-server/internal/base/utils"
+
+func ResetRules(rules ...func(a, b Spectrum) bool) func(a, b Spectrum) bool {
+	return func(a, b Spectrum) bool {
 		for _, rule := range rules {
 			if rule(a, b) {
 				return true
@@ -11,58 +13,47 @@ func ResetRules(rules ...func(a, b *List[int]) bool) func(a, b *List[int]) bool 
 	}
 }
 
-func RuleSameFoot(a, b *List[int]) bool {
-	if a.Head == nil || b.Head == nil {
-		return false
-	}
-	if a.Tail.Data == b.Head.Data {
+func RuleSameFoot(a, b Spectrum) bool {
+	if a.LastFoot() == b.FirstFoot() {
 		return true
 	}
 	return false
 }
 
-func RuleReverse(a, b *List[int]) bool {
-	if a.Head == nil || b.Head == nil {
+func RuleSameNote(a, b Spectrum) bool {
+	return !RuleSameFoot(a, b) && utils.ArraysEqual(a.LastNote().Position, b.FirstNote().Position)
+}
+
+func RuleReverse(a, b Spectrum) bool {
+	if !a.LastNote().Single() || !b.FirstNote().Single() {
 		return false
 	}
-	if a.Tail.Prev != nil && a.Tail.Prev.Data == 0 && a.Tail.Data == 3 && b.Head.Data == 4 {
+	if a.Tail().Prev != nil && a.Tail().Prev.Data.Position.At(0) && a.Tail().Data.Position.At(3) && b.Head().Data.Position.At(4) {
 		return true
 	}
-	if a.Tail.Prev != nil && a.Tail.Prev.Data == 3 && a.Tail.Data == 0 && b.Head.Data == 1 {
+	if a.Tail().Prev != nil && a.Tail().Prev.Data.Position.At(3) && a.Tail().Data.Position.At(0) && b.Head().Data.Position.At(1) {
 		return true
 	}
 	return false
 }
 
-func RuleDiagonal(a, b *List[int]) bool {
-	if a.Head == nil || b.Head == nil {
+func RuleDiagonal(a, b Spectrum) bool {
+	if !a.LastNote().Single() || !b.FirstNote().Single() {
 		return false
 	}
-	if a.Tail.Prev != nil && a.Tail.Prev.Data == 0 && a.Tail.Data == 2 && b.Head.Data == 4 {
+	if a.Tail().Prev != nil && a.Tail().Prev.Data.Position.At(0) && a.Tail().Data.Position.At(2) && b.Head().Data.Position.At(4) {
 		return true
 	}
-	if a.Tail.Prev != nil && a.Tail.Prev.Data == 3 && a.Tail.Data == 2 && b.Head.Data == 1 {
+	if a.Tail().Prev != nil && a.Tail().Prev.Data.Position.At(3) && a.Tail().Data.Position.At(2) && b.Head().Data.Position.At(1) {
 		return true
 	}
 	return false
 }
 
-func RuleRepeat(a, b *List[int]) bool {
-	if a.Head == nil || b.Head == nil {
-		return false
-	}
-	if a.Tail.Prev != nil && b.Head != nil && a.Tail.Prev.Data == b.Head.Data {
-		return true
-	}
-	if a.Tail != nil && b.Head.Next != nil && a.Tail.Data == b.Head.Next.Data {
-		return true
-	}
-	return false
+func RuleRepeat(a, b Spectrum) bool {
+	return utils.ArraysEqual(a.Tail().Data.Position, b.Head().Data.Position)
 }
 
-func RuleNoRepeat(a, b *List[int]) bool {
-	if a.Head == nil || b.Head == nil {
-		return false
-	}
+func RuleNoRepeat(a, b Spectrum) bool {
 	return !RuleRepeat(a, b)
 }

@@ -28,7 +28,7 @@ func printVal(val int) {
 }
 
 func TestRandomByTwo(t *testing.T) {
-	list := RandomBy(TwoNotesMap, 100, ResetRules(RuleSameFoot, RuleReverse))
+	list := RandomBy(TwoNotesMap, 100, ResetRules(RuleSameNote, RuleReverse))
 	arr := list.ToArray()
 	for _, val := range arr {
 		printVal(val)
@@ -36,7 +36,7 @@ func TestRandomByTwo(t *testing.T) {
 }
 
 func TestRandomByFour(t *testing.T) {
-	list := RandomBy(FourNotesRunMap, 100, ResetRules(RuleSameFoot, RuleReverse, RuleDiagonal, RuleNoRepeat))
+	list := RandomBy(FourNotesRunMap, 100, ResetRules(RuleSameNote, RuleReverse, RuleDiagonal, RuleNoRepeat))
 	arr := list.ToArray()
 	for _, val := range arr {
 		printVal(val)
